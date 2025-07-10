@@ -1,27 +1,51 @@
 [org 0x7C00]
 [bits 16]
 
-; Stack and segment setup
-xor ax, ax
-mov ds, ax          ; Set data segment to 0
-mov es, ax          ; Set extra segment to 0
-mov ss, ax          ; Set stack segment to 0
-mov sp, 0x7C00      ; Set stack pointer to 0x7C00
+start:
+    xor ax, ax 
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov sp, 0x7C00
 
-; Disk reset
+; --------------------
+; Reset disk + delay
 reset_disk:
-    mov ah, 0           ; BIOS reset disk function
-    int 0x13            ; BIOS interrupt
-    jc reset_disk       ; Retry if carry flag is set (error)
+    mov ah, 0
+    int 0x13
+    jc reset_disk
 
-mov ax, 1
-mov ax, 2
-mov ax, 3
-mov ax, 4
-mov ax, 5
-mov ax, 7 
+; Add simple delay (busy loop)
+    call delay
+    call delay
 
-; Read stage2
+; --------------------
+; Display first message
+    mov si, msg1
+    call print_string
+
+; Delay between messages
+    call delay
+    call delay
+
+; --------------------
+; Display second message
+    mov si, msg2
+    call print_string
+
+; Delay between messages
+    call delay
+    call delay
+
+; --------------------
+; Display third message
+    mov si, msg3
+    call print_string
+    call delay
+    call delay
+
+; --------------------
+; Read stage2 (load second stage from disk)
 read_stage2:
     mov ah, 0x02           ; BIOS read sectors function
     mov al, 4              ; Number of sectors to read
@@ -35,18 +59,39 @@ read_stage2:
 ; Jump to stage2
 jmp 0x0000:0x8000
 
-; Text printing routine
+; --------------------
+; Function: print a null-terminated string at [SI]
 print_string:
-    mov ah, 0x0E           ; BIOS teletype output function
-    mov bh, 0              ; Page 0
-.loop:
-    lodsb                  ; Load next byte from SI into AL
-    cmp al, 0              ; End of string?
+    mov ah, 0x0E
+.next_char:
+    lodsb
+    cmp al, 0
     je .done
-    int 0x10               ; Print character
-    jmp .loop
+    int 0x10
+    jmp .next_char
 .done:
     ret
-	
-times 510 - ($-$$) db 0
-dw 0xAA55                 ; Boot signature
+
+; --------------------
+; Simple delay function (busy loop)
+delay:
+    mov cx, 0xFFFF
+.delay_loop1:
+    mov dx, 0xFFFF
+.delay_loop2:
+    dec dx
+    jnz .delay_loop2
+    dec cx
+    jnz .delay_loop1
+    ret
+
+; --------------------
+; Messages to display
+msg1 db "Bootloader started successfully!", 0
+msg2 db 0x0D, 0x0A, "Disk reset completed!", 0
+msg3 db 0x0D, 0x0A, "Loading operating system...", 0
+
+; --------------------
+; Boot sector padding 
+times 510 - ($ - $$) db 0
+dw 0xAA55

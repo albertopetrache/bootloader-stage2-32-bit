@@ -1,7 +1,7 @@
 
 # Bootloader + 32-bit Protected Mode Demo
 
-This project contains a simple x86 assembly bootloader and a second-stage program that switches the CPU into 32-bit protected mode and demonstrates basic text output and number conversion. It is intended as an educational example showing how to load code beyond the bootloader and enter protected mode on real hardware or an emulator.
+This project features a basic x86 assembly bootloader and a second-stage program that transitions the CPU into 32-bit protected mode. It showcases essential functionality such as text output and number conversion, demonstrating how to load and execute code beyond the bootloader on real hardware or in an emulator.
 
 ---
 
@@ -9,9 +9,8 @@ This project contains a simple x86 assembly bootloader and a second-stage progra
 
 - **Stage 1 (bootloader):**  
   - Runs in 16-bit real mode.  
-  - Resets the disk using BIOS interrupt 13h.  
-  - Displays a loading message with a progress bar.  
-  - Loads stage 2 (one sector) from disk into memory.  
+  - Resets the disk using BIOS interrupt 13h.    
+  - Loads stage 2 from disk into memory.  
   - Transfers execution to stage 2.
 
 - **Stage 2:**  
@@ -20,7 +19,8 @@ This project contains a simple x86 assembly bootloader and a second-stage progra
   - Initializes segment registers and stack.  
   - Clears the screen using VGA memory.  
   - Prints messages and converts an integer to ASCII decimal string.  
-  - Displays the number on screen.  
+  - Displays the number on screen.
+  - Displays a loading message with a progress bar. 
   - Halts the CPU.
 
 ---
@@ -74,8 +74,7 @@ This will boot the image as a floppy disk, showing the bootloader’s messages a
 - This project is **not a full operating system**, but a bootloader + demo to illustrate transitioning from real mode to protected mode.  
 - The bootloader must be exactly 512 bytes and end with the boot signature `0xAA55`.  
 - Stage 2 is loaded at memory location `0x8000`.  
-- Screen output in protected mode writes directly to VGA memory at `0xB8000`.  
-- The integer-to-string conversion is a simple algorithm for educational purposes.  
+- Screen output in protected mode writes directly to VGA memory at `0xB8000`. 
 - Interrupts are disabled during protected mode initialization to avoid unexpected behavior.
 
 ---

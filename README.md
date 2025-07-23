@@ -71,11 +71,17 @@ This will boot the image as a floppy disk, showing the bootloader’s messages a
 
 ## Important Notes
 
+## Important Notes
+
 - This project is **not a full operating system**, but a bootloader + demo to illustrate transitioning from real mode to protected mode.  
-- The bootloader must be exactly 512 bytes and end with the boot signature `0xAA55`.  
+- The bootloader must be exactly **512 bytes** and end with the boot signature `0xAA55`.  
 - Stage 2 is loaded at memory location `0x8000`.  
-- Screen output in protected mode writes directly to VGA memory at `0xB8000`. 
-- Interrupts are disabled during protected mode initialization to avoid unexpected behavior.
+- Screen output in protected mode writes directly to **VGA memory at `0xB8000`**.  
+- **Interrupts are disabled** during protected mode initialization to avoid unexpected behavior.  
+- ⚠️ **Delays (`delay` loops) were added in the bootloader specifically to make it work reliably on real hardware.**  
+  - On actual machines, the BIOS and hardware may require time to stabilize after disk operations.  
+  - These delays are **not required in QEMU or other emulators**, where execution is much faster and more tolerant to timing issues.
+
 
 ---
 
